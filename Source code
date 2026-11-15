@@ -1,0 +1,306 @@
+using System;
+
+namespace ConsoleArcade
+{
+    class Program
+    {
+        static int totalScore = 0;
+        static Random rng = new Random();
+
+        static void Main(string[] args)
+        {
+            bool running = true;
+
+            while (running)
+            {
+                ShowMenu();
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        GuessTheNumber();
+                        break;
+                    case "2":
+                        RockPaperScissors();
+                        break;
+                    case "3":
+                        QuickMath();
+                        break;
+                    case "4":
+                        ShowScore();
+                        break;
+                    case "5":
+                        running = false;
+                        break;
+                    default:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\n  Invalid choice! Press ENTER to try again...");
+                        Console.ResetColor();
+                        Console.ReadLine();
+                        break;
+                }
+            }
+
+            GoodBye();
+        }
+
+        // ---------- MENU DESIGN ----------
+        static void ShowMenu()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("  ╔══════════════════════════════════════════════╗");
+            Console.WriteLine("  ║                                              ║");
+            Console.Write("  ║");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("   ★ ★ ★   C O N S O L E   A R C A D E   ★ ★ ★ ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("║");
+            Console.WriteLine("  ║                                              ║");
+            Console.WriteLine("  ╠══════════════════════════════════════════════╣");
+
+            PrintOption("1", "Guess The Number", ConsoleColor.Green);
+            PrintOption("2", "Rock Paper Scissors", ConsoleColor.Magenta);
+            PrintOption("3", "Quick Math Challenge", ConsoleColor.Yellow);
+            PrintOption("4", "View My Score", ConsoleColor.White);
+            PrintOption("5", "Exit Game", ConsoleColor.Red);
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("  ╠══════════════════════════════════════════════╣");
+            Console.Write("  ║  ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("Total Score: " + totalScore.ToString().PadRight(30));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("║");
+            Console.WriteLine("  ╚══════════════════════════════════════════════╝");
+            Console.ResetColor();
+            Console.Write("\n  >> Choose your game (1-5): ");
+        }
+
+        static void PrintOption(string number, string text, ConsoleColor color)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("  ║   ");
+            Console.ForegroundColor = color;
+            Console.Write("[" + number + "] " + text.PadRight(38));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("║");
+        }
+
+        static void Banner(string title, ConsoleColor color)
+        {
+            Console.Clear();
+            Console.ForegroundColor = color;
+            Console.WriteLine("\n  ==============================================");
+            Console.WriteLine("   " + title);
+            Console.WriteLine("  ==============================================\n");
+            Console.ResetColor();
+        }
+
+        static void Pause()
+        {
+            Console.WriteLine("\n  Press ENTER to go back to the menu...");
+            Console.ReadLine();
+        }
+
+        // ---------- GAME 1: GUESS THE NUMBER ----------
+        static void GuessTheNumber()
+        {
+            Banner("GAME 1: GUESS THE NUMBER", ConsoleColor.Green);
+
+            int secret = rng.Next(1, 51);
+            int attempts = 5;
+            bool won = false;
+
+            Console.WriteLine("  I'm thinking of a number from 1 to 50.");
+            Console.WriteLine("  You have " + attempts + " attempts.\n");
+
+            while (attempts > 0 && !won)
+            {
+                Console.Write("  Your guess (" + attempts + " left): ");
+                int guess;
+
+                if (!int.TryParse(Console.ReadLine(), out guess))
+                {
+                    Console.WriteLine("  Please enter a valid number!");
+                    continue;
+                }
+
+                if (guess == secret)
+                {
+                    won = true;
+                }
+                else if (guess < secret)
+                {
+                    Console.WriteLine("  Too LOW!");
+                    attempts--;
+                }
+                else
+                {
+                    Console.WriteLine("  Too HIGH!");
+                    attempts--;
+                }
+            }
+
+            if (won)
+            {
+                int points = (attempts + 1) * 10;
+                totalScore += points;
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("\n  YOU WIN! +" + points + " points");
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\n  GAME OVER! The number was " + secret);
+            }
+            Console.ResetColor();
+            Pause();
+        }
+
+        // ---------- GAME 2: ROCK PAPER SCISSORS ----------
+        static void RockPaperScissors()
+        {
+            Banner("GAME 2: ROCK PAPER SCISSORS (Best of 3)", ConsoleColor.Magenta);
+
+            string[] options = { "Rock", "Paper", "Scissors" };
+            int playerWins = 0;
+            int computerWins = 0;
+
+            for (int round = 1; round <= 3; round++)
+            {
+                Console.WriteLine("  Round " + round);
+                Console.Write("  [1] Rock  [2] Paper  [3] Scissors : ");
+                int player;
+
+                if (!int.TryParse(Console.ReadLine(), out player) || player < 1 || player > 3)
+                {
+                    Console.WriteLine("  Invalid input, round skipped.\n");
+                    continue;
+                }
+
+                int computer = rng.Next(1, 4);
+                Console.WriteLine("  You: " + options[player - 1] + "  |  Computer: " + options[computer - 1]);
+
+                if (player == computer)
+                {
+                    Console.WriteLine("  It's a TIE!\n");
+                }
+                else if ((player == 1 && computer == 3) ||
+                         (player == 2 && computer == 1) ||
+                         (player == 3 && computer == 2))
+                {
+                    Console.WriteLine("  You win this round!\n");
+                    playerWins++;
+                }
+                else
+                {
+                    Console.WriteLine("  Computer wins this round!\n");
+                    computerWins++;
+                }
+            }
+
+            Console.WriteLine("  Final: You " + playerWins + " - " + computerWins + " Computer");
+
+            if (playerWins > computerWins)
+            {
+                totalScore += 30;
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("  YOU WIN THE MATCH! +30 points");
+            }
+            else if (playerWins < computerWins)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("  You lost the match. Try again!");
+            }
+            else
+            {
+                totalScore += 10;
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("  Draw match! +10 points");
+            }
+            Console.ResetColor();
+            Pause();
+        }
+
+        // ---------- GAME 3: QUICK MATH ----------
+        static void QuickMath()
+        {
+            Banner("GAME 3: QUICK MATH CHALLENGE (5 questions)", ConsoleColor.Yellow);
+
+            int correct = 0;
+
+            for (int i = 1; i <= 5; i++)
+            {
+                int a = rng.Next(1, 21);
+                int b = rng.Next(1, 21);
+                int op = rng.Next(1, 4);
+                int answer;
+                string symbol;
+
+                if (op == 1)
+                {
+                    answer = a + b;
+                    symbol = "+";
+                }
+                else if (op == 2)
+                {
+                    answer = a - b;
+                    symbol = "-";
+                }
+                else
+                {
+                    answer = a * b;
+                    symbol = "x";
+                }
+
+                Console.Write("  Q" + i + ": " + a + " " + symbol + " " + b + " = ");
+                int userAnswer;
+
+                if (int.TryParse(Console.ReadLine(), out userAnswer) && userAnswer == answer)
+                {
+                    Console.WriteLine("  Correct!");
+                    correct++;
+                }
+                else
+                {
+                    Console.WriteLine("  Wrong! Answer: " + answer);
+                }
+            }
+
+            int points = correct * 5;
+            totalScore += points;
+            Console.WriteLine("\n  You got " + correct + "/5 correct. +" + points + " points");
+            Pause();
+        }
+
+        // ---------- SCORE ----------
+        static void ShowScore()
+        {
+            Banner("YOUR SCORE", ConsoleColor.White);
+            Console.WriteLine("  Total Score: " + totalScore);
+
+            if (totalScore >= 100)
+                Console.WriteLine("  Rank: ARCADE MASTER");
+            else if (totalScore >= 50)
+                Console.WriteLine("  Rank: PRO PLAYER");
+            else
+                Console.WriteLine("  Rank: ROOKIE");
+
+            Pause();
+        }
+
+        // ---------- EXIT ----------
+        static void GoodBye()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n  ****************************************");
+            Console.WriteLine("  *   THANKS FOR PLAYING CONSOLE ARCADE  *");
+            Console.WriteLine("  *   Final Score: " + totalScore.ToString().PadRight(23) + "*");
+            Console.WriteLine("  ****************************************\n");
+            Console.ResetColor();
+        }
+    }
+}
