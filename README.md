@@ -9,6 +9,8 @@ Objectives
 - To apply basic programming concepts such as loops, conditional statements, and user input.
 - To create different games within a single application.
 - To improve problem-solving and logical thinking skills through game development.
+
+
   Members
   Santamena, Jake Henson O.
   Abril, Jeay Ehm C.
